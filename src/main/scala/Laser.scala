@@ -17,7 +17,7 @@ class Laser(world:World,ship:Ship) {
   //
   val bodyDef = new BodyDef
   bodyDef.`type` = BodyType.DYNAMIC
-  bodyDef.position.set(ship.x,ship.y);   // the body's origin position.
+  bodyDef.position.set(ship.imgCenterX,ship.imgCenterY);   // the body's origin position.
   bodyDef.angle = ship.angle      // the body's angle in radians.
   bodyDef.linearDamping = 0.0f
   bodyDef.angularDamping = 0.0f

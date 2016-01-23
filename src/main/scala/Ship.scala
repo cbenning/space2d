@@ -12,6 +12,8 @@ class Ship(world:World)
   extends InputProviderListener {
 
   val img = new Image("large.png")
+  img.getWidth
+  img.getHeight
 
   var projectiles = Vector.empty[Laser]
 
@@ -20,7 +22,7 @@ class Ship(world:World)
   //
   val bodyDef = new BodyDef
   bodyDef.`type` = BodyType.DYNAMIC
-  bodyDef.position.set(0,0);   // the body's origin position.
+  bodyDef.position.set(50,50);   // the body's origin position.
 //  bodyDef.angle = b2_pi      // the body's angle in radians.
   bodyDef.linearDamping = 0.02f
   bodyDef.angularDamping = 0.4f
@@ -33,7 +35,8 @@ class Ship(world:World)
 
   //shape Def
   val dynamicBox = new PolygonShape
-  dynamicBox.setAsBox(1, 1)
+//  dynamicBox.setRadius(1)
+  dynamicBox.setAsBox(1.0f, 1.0f)
 
   //fixture def
   val fixtureDef = new FixtureDef
@@ -83,14 +86,14 @@ class Ship(world:World)
   }
 
   def draw(gc: GameContainer, g: Graphics):Unit = {
-    img.draw(body.getPosition.x,body.getPosition.y)
+    img.draw(body.getWorldCenter.x,body.getWorldCenter.y)
     projectiles.foreach(p => p.draw(gc,g))
   }
 
   def x = body.getPosition.x
   def y = body.getPosition.y
-  def centerX = body.getWorldCenter.x
-  def centerY = body.getWorldCenter.y
+  def imgCenterX = x+(img.getWidth/2)
+  def imgCenterY = y
   def angle = body.getAngle
 
 }
