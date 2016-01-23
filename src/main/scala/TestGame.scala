@@ -1,47 +1,32 @@
-import org.newdawn.slick.{Color, Graphics, GameContainer, BasicGame}
-import org.newdawn.slick.geom.Circle
+import org.jbox2d.common.Vec2
+import org.jbox2d.dynamics.World
+import org.newdawn.slick._
 
 /**
   * Created by chris on 16/01/16.
   */
-class TestGame extends BasicGame("shit son") {
+class TestGame
+  extends BasicGame("shit son") {
 
-  var objects = Vector.empty[Circle]
-  var current = new Circle(0, 0, 0)
-  var everPressed = false
-  def init(gc: GameContainer) {}
-  def render(gc: GameContainer, g: Graphics) {
-    g.setColor(Color.red)
-    objects foreach { x =>
-      g.draw(x)
-    }
-    g.setColor(Color.yellow)
-    g.draw(current)
+  var objects = Vector.empty[Ship]
+  val gravity = new Vec2(0.0f,0.0f)
+  val world = new World(gravity);
+
+  val timeStep = 1.0f / 60.0f;
+  val velocityIterations = 6;
+  val positionIterations = 2;
+
+  def init(gc: GameContainer): Unit = {
+    objects = objects :+ new PlayerShip(gc,world)
   }
 
-  def update(gc: GameContainer, delta: Int) {
-    val input = gc.getInput
+  def render(gc: GameContainer, g: Graphics) {
+    objects foreach { x => x.draw(gc,g) }
+  }
 
-    val x = input.getMouseX()
-    val y = input.getMouseY()
-
-    if (input.isMouseButtonDown(0)) {
-      everPressed = true
-      if (current.getX() != 0 && current.getY() != 0) {
-        val cx = current.getX()
-        val cy = current.getY()
-        val radius = scala.math.sqrt(scala.math.pow(x - cx, 2) + scala.math.pow(y - cy, 2))
-        current.setRadius(radius.toFloat)
-      } else {
-        current.setX(x)
-        current.setY(y)
-        current.setRadius(0)
-      }
-    } else if(everPressed == true) {
-      objects = objects :+ current
-      current = new Circle(0, 0, 0)
-      everPressed = false
-    }
+  def update(gc: GameContainer, delta: Int): Unit = {
+    objects foreach { x => x.update(gc,delta)}
+    world.step(timeStep, velocityIterations, positionIterations);
   }
 
 }
