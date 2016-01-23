@@ -13,6 +13,8 @@ class Ship(world:World)
 
   val img = new Image("large.png")
 
+  var projectiles = Vector.empty[Laser]
+
   //
   //Box2D stuff
   //
@@ -51,6 +53,7 @@ class Ship(world:World)
     case CommandDown => down=true
     case CommandLeft => left=true
     case CommandRight => right=true
+    case CommandFire => projectiles = projectiles :+ new Laser(world,this)
     case e => println("something weird")
   }
 
@@ -81,6 +84,13 @@ class Ship(world:World)
 
   def draw(gc: GameContainer, g: Graphics):Unit = {
     img.draw(body.getPosition.x,body.getPosition.y)
+    projectiles.foreach(p => p.draw(gc,g))
   }
+
+  def x = body.getPosition.x
+  def y = body.getPosition.y
+  def centerX = body.getWorldCenter.x
+  def centerY = body.getWorldCenter.y
+  def angle = body.getAngle
 
 }

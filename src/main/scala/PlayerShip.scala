@@ -14,5 +14,6 @@ class PlayerShip(gc: GameContainer, world:World)
   provider.bindCommand(new KeyControl(Input.KEY_UP), CommandUp)
   provider.bindCommand(new KeyControl(Input.KEY_RIGHT), CommandRight)
   provider.bindCommand(new KeyControl(Input.KEY_DOWN), CommandDown)
+  provider.bindCommand(new KeyControl(Input.KEY_SPACE), CommandFire)
 
 }
