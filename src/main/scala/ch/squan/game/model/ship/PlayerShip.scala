@@ -1,6 +1,10 @@
+package ch.squan.game.model.ship
+
+import ch.squan.game._
+import ch.squan.game.model.command._
 import org.jbox2d.dynamics.World
+import org.newdawn.slick.command.{InputProvider, KeyControl}
 import org.newdawn.slick.{GameContainer, Input}
-import org.newdawn.slick.command.{KeyControl, InputProvider}
 
 /**
   * Created by chris on 22/01/16.

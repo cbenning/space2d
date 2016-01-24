@@ -1,3 +1,6 @@
+package ch.squan.game
+
+import ch.squan.game.model.ship.{Ship, PlayerShip}
 import org.jbox2d.common.Vec2
 import org.jbox2d.dynamics.World
 import org.newdawn.slick._
@@ -5,16 +8,16 @@ import org.newdawn.slick._
 /**
   * Created by chris on 16/01/16.
   */
-class TestGame
+class Game
   extends BasicGame("shit son") {
 
   var objects = Vector.empty[Ship]
   val gravity = new Vec2(0.0f,0.0f)
-  val world = new World(gravity);
+  val world = new World(gravity)
 
-  val timeStep = 1.0f / 60.0f;
-  val velocityIterations = 6;
-  val positionIterations = 2;
+  val timeStep = 1.0f / 60.0f
+  val velocityIterations = 6
+  val positionIterations = 2
 
   def init(gc: GameContainer): Unit = {
     objects = objects :+ new PlayerShip(gc,world)

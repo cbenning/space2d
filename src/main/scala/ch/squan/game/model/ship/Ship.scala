@@ -1,9 +1,14 @@
+package ch.squan.game.model.ship
+
+import ch.squan.game._
+import ch.squan.game.model.command._
+import ch.squan.game.model.projectile.{Projectile, Laser}
 import org.jbox2d.collision.shapes.PolygonShape
 import org.jbox2d.common.Vec2
-import org.jbox2d.dynamics.{FixtureDef, BodyType, World, BodyDef}
-import org.newdawn.slick.geom.Vector2f
-import org.newdawn.slick.{Graphics, GameContainer, Image}
+import org.jbox2d.dynamics.{BodyDef, BodyType, FixtureDef, World}
 import org.newdawn.slick.command.{Command, InputProviderListener}
+import org.newdawn.slick.geom.Vector2f
+import org.newdawn.slick.{GameContainer, Graphics, Image}
 
 /**
   * Created by chris on 22/01/16.
@@ -15,7 +20,7 @@ class Ship(world:World)
   img.getWidth
   img.getHeight
 
-  var projectiles = Vector.empty[Laser]
+  var projectiles = Vector.empty[Projectile]
 
   //
   //Box2D stuff
@@ -40,15 +45,15 @@ class Ship(world:World)
 
   //fixture def
   val fixtureDef = new FixtureDef
-  fixtureDef.shape = dynamicBox;
-  fixtureDef.density = 5.0f;
-  fixtureDef.friction = 0.0f;
+  fixtureDef.shape = dynamicBox
+  fixtureDef.density = 5.0f
+  fixtureDef.friction = 0.0f
 
   //Fire it up
   val body = world.createBody(bodyDef)
   body.createFixture(fixtureDef)
 
-  //Ship movements
+  //ch.squan.game.model.ship.Ship movements
   var up,down,left,right = false
 
   override def controlPressed(cmd:Command):Unit = cmd match {
@@ -56,7 +61,7 @@ class Ship(world:World)
     case CommandDown => down=true
     case CommandLeft => left=true
     case CommandRight => right=true
-    case CommandFire => projectiles = projectiles :+ new Laser(world,this)
+    case CommandFire => projectiles = projectiles :+ fireLaser
     case e => println("something weird")
   }
 
@@ -86,14 +91,35 @@ class Ship(world:World)
   }
 
   def draw(gc: GameContainer, g: Graphics):Unit = {
+    //Draw ship
     img.draw(body.getWorldCenter.x,body.getWorldCenter.y)
-    projectiles.foreach(p => p.draw(gc,g))
+    //Remove expired
+    projectiles = projectiles.filter(p => !p.isExpired).map(p => {p.draw(gc,g); p})
   }
 
-  def x = body.getPosition.x
-  def y = body.getPosition.y
-  def imgCenterX = x+(img.getWidth/2)
-  def imgCenterY = y
-  def angle = body.getAngle
+  /**
+    *
+    * @return
+    */
+  def fireLaser:Laser = new Laser(world,
+        projectileSourcePosition.x,
+        projectileSourcePosition.y,
+        projectileSourceAngle,
+        1000)
+
+  /**
+    *
+    * @return
+    */
+  def projectileSourcePosition:Vec2 = {
+    val pos = body.getPosition
+    new Vec2(pos.x+(img.getWidth/2),pos.y)
+  }
+
+  /**
+    *
+    * @return
+    */
+  def projectileSourceAngle:Float = body.getAngle
 
 }
