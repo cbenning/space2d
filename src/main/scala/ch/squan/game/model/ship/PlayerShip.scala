@@ -28,7 +28,7 @@ class PlayerShip(gc: GameContainer, world:World,x:Float,y:Float,angle:Float)
     */
   override def draw(gc: GameContainer, g: Graphics):Unit = {
     //Draw ship
-    img.draw(Camera.x,Camera.y)
+    img.draw(Camera.x-imgCenterX,Camera.y-imgCenterY)
     //Remove expired
     projectiles = projectiles.filter(p => !p.isExpired).map(p => {p.draw(gc,g); p})
   }

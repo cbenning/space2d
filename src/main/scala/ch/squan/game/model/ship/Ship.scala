@@ -1,6 +1,5 @@
 package ch.squan.game.model.ship
 
-import ch.squan.game.Camera
 import ch.squan.game.model.command._
 import ch.squan.game.model.projectile.{Projectile, Laser}
 import org.jbox2d.collision.shapes.PolygonShape
@@ -95,7 +94,7 @@ class Ship(world:World,x:Float,y:Float,angle:Float,speed:Float,turning:Float,img
     */
   def draw(gc: GameContainer, g: Graphics):Unit = {
     //Draw ship
-    img.draw(body.getWorldCenter.x,body.getWorldCenter.y)
+    img.draw(body.getWorldCenter.x-imgCenterX,body.getWorldCenter.y-imgCenterY)
     //Remove expired
     projectiles = projectiles.filter(p => !p.isExpired).map(p => {p.draw(gc,g); p})
   }
