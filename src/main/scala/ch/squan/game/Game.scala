@@ -20,7 +20,7 @@ class Game
   val positionIterations = 2
 
   def init(gc: GameContainer): Unit = {
-    objects = objects :+ new PlayerShip(gc,world)
+    objects = objects :+ new PlayerShip(gc,world,400,400,0)
   }
 
   def render(gc: GameContainer, g: Graphics) {
