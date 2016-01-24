@@ -86,10 +86,11 @@ class Ship(world:World,x:Float,y:Float,angle:Float,speed:Float,turning:Float,img
 
     //Strafe Left/Right thrust
     if(strafel) {
-      val langle = angle-90
+      val langle = angle - 90
       val tmpLVec = new Vector2f(langle).normalise
-      val lrot = new Vec2(tmpLVec.getX,tmpLVec.getY)
-      body.applyForce(lrot.mul(speed/2),body.getWorldCenter)
+      val lrot = new Vec2(tmpLVec.getX, tmpLVec.getY)
+      body.applyForce(lrot.mul(speed / 2), body.getWorldCenter)
+    }
     if(strafer) {
       val rangle = angle + 90
       val tmpRVec = new Vector2f(rangle).normalise
