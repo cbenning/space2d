@@ -34,18 +34,18 @@ class Laser(world:World,x:Float,y:Float,angle:Float)
   bodyDef.allowSleep = false
 
   //polygon
-//  val dynamicBox = new PolygonShape
-//  dynamicBox.setAsBox(1, 1)
+  val dynamicBox = new PolygonShape
+  dynamicBox.setAsBox(1, 1)
 
   //fixture def
-//  val fixtureDef = new FixtureDef
-//  fixtureDef.shape = dynamicBox
-//  fixtureDef.density = 5.0f
-//  fixtureDef.friction = 0.0f
+  val fixtureDef = new FixtureDef
+  fixtureDef.shape = dynamicBox
+  fixtureDef.density = 0.0f
+  fixtureDef.friction = 0.0f
 
   //Fire it up
   val body = world.createBody(bodyDef)
-//  body.createFixture(fixtureDef)
+  body.createFixture(fixtureDef)
 
   // val angle = body.getAngle
   val tmpVec = new Vector2f(angle)

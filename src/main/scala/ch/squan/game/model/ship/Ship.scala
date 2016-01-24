@@ -103,10 +103,7 @@ class Ship(world:World,x:Float,y:Float,angle:Float,speed:Float,turning:Float,img
     *
     * @return
     */
-  def fireLaser:Laser = new Laser(world,
-        projectileSourceX,
-        projectileSourceY,
-        projectileSourceAngle)
+  def fireLaser:Laser = new Laser(world, projectileSourceX, projectileSourceY, projectileSourceAngle)
 
   /**
     *
