@@ -15,7 +15,7 @@ import scala.concurrent.Future
 class Laser(world:World,x:Float,y:Float,angle:Float)
   extends Projectile {
 
-  val speed = 2000
+  val speed = 9000
   val expireMillis = 1200
   val imgScale = 0.5f
   val img = new Image("laser-red.png").getScaledCopy(imgScale)

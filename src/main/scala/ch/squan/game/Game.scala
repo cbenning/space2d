@@ -25,7 +25,7 @@ class Game
 
   def init(gc: GameContainer): Unit = {
     background = new Image("starfield.png")
-    level = new Level
+    level = new Level(10000,10000)
     player = new PlayerShip(gc,world,0,0,0)
     Camera.follow(player)
     Camera.setSize(gc.getWidth,gc.getHeight)
