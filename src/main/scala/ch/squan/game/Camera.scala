@@ -15,9 +15,9 @@ object Camera {
 
   def setSize(w:Int,h:Int):Unit = { _w = w; _h = h }
 
-  def x = _player.imgCenterX
+  def x = _player.centerX
 
-  def y = _player.imgCenterY
+  def y = _player.centerY
 
   def w = _w
 

@@ -21,16 +21,16 @@ class PlayerShip(gc: GameContainer, world:World,x:Float,y:Float,angle:Float)
   provider.bindCommand(new KeyControl(Input.KEY_SPACE), CommandFire)
 
 
-  /**
-    *
-    * @param gc
-    * @param g
-    */
-  override def draw(gc: GameContainer, g: Graphics):Unit = {
-    //Draw ship
-    img.draw(Camera.x-imgCenterX,Camera.y-imgCenterY)
-    //Remove expired
-    projectiles = projectiles.filter(p => !p.isExpired).map(p => {p.draw(gc,g); p})
-  }
+//  /**
+//    *
+//    * @param gc
+//    * @param g
+//    */
+//  override def draw(gc: GameContainer, g: Graphics):Unit = {
+//    //Draw ship
+//    img.draw(Camera.x-(img.getWidth/2),Camera.y-(img.getHeight/4))
+//    //Remove expired
+//    projectiles = projectiles.filter(p => !p.isExpired).map(p => {p.draw(gc,g); p})
+//  }
 
 }

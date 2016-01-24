@@ -94,7 +94,7 @@ class Ship(world:World,x:Float,y:Float,angle:Float,speed:Float,turning:Float,img
     */
   def draw(gc: GameContainer, g: Graphics):Unit = {
     //Draw ship
-    img.draw(body.getWorldCenter.x-imgCenterX,body.getWorldCenter.y-imgCenterY)
+    img.draw(centerX-(img.getWidth/2),centerY-(img.getHeight/4))
     //Remove expired
     projectiles = projectiles.filter(p => !p.isExpired).map(p => {p.draw(gc,g); p})
   }
@@ -103,19 +103,20 @@ class Ship(world:World,x:Float,y:Float,angle:Float,speed:Float,turning:Float,img
     *
     * @return
     */
-  def fireLaser:Laser = new Laser(world, imgCenterX, imgCenterY, imgAngle)
+  def fireLaser:Laser = new Laser(world, centerX, centerY, imgAngle)
 
   /**
     *
     * @return
     */
-  def imgCenterX:Float = body.getPosition.x+(img.getWidth/2)
+  def centerX:Float = body.getWorldCenter.x - (img.getWidth/2)
 
   /**
     *
     * @return
     */
-  def imgCenterY:Float = body.getPosition.y+(img.getHeight/4)
+  def centerY:Float = body.getWorldCenter.y - (img.getHeight/4)
+
 
   /**
     *
