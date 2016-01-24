@@ -1,5 +1,6 @@
 package ch.squan.game.model.ship
 
+import ch.squan.game.Camera
 import ch.squan.game.model.command._
 import ch.squan.game.model.projectile.{Projectile, Laser}
 import org.jbox2d.collision.shapes.PolygonShape
@@ -103,24 +104,24 @@ class Ship(world:World,x:Float,y:Float,angle:Float,speed:Float,turning:Float,img
     *
     * @return
     */
-  def fireLaser:Laser = new Laser(world, projectileSourceX, projectileSourceY, projectileSourceAngle)
+  def fireLaser:Laser = new Laser(world, imgCenterX, imgCenterY, imgAngle)
 
   /**
     *
     * @return
     */
-  def projectileSourceX:Float = body.getPosition.x+(img.getWidth/2)
+  def imgCenterX:Float = body.getPosition.x+(img.getWidth/2)
 
   /**
     *
     * @return
     */
-  def projectileSourceY:Float = body.getPosition.y+(img.getHeight/4)
+  def imgCenterY:Float = body.getPosition.y+(img.getHeight/4)
 
   /**
     *
     * @return
     */
-  def projectileSourceAngle:Float = body.getAngle
+  def imgAngle:Float = body.getAngle
 
 }

@@ -1,6 +1,6 @@
 package ch.squan.game.model.projectile
 
-import ch.squan.game.model.ship.Ship
+import ch.squan.game.Camera
 import org.jbox2d.collision.shapes.PolygonShape
 import org.jbox2d.common.Vec2
 import org.jbox2d.dynamics.{FixtureDef, BodyDef, BodyType, World}

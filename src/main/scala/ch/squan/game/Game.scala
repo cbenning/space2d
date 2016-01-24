@@ -19,15 +19,26 @@ class Game
   val velocityIterations = 6
   val positionIterations = 2
 
+  var level:Level = null
+  var background:Image = null
+  var player:PlayerShip = null
+
   def init(gc: GameContainer): Unit = {
-    objects = objects :+ new PlayerShip(gc,world,400,400,0)
+    background = new Image("starfield.png")
+    level = new Level
+    player = new PlayerShip(gc,world,0,0,0)
+    Camera.follow(player)
+    Camera.setSize(gc.getWidth,gc.getHeight)
   }
 
   def render(gc: GameContainer, g: Graphics) {
+    level.draw(gc,g)
+    player.draw(gc,g)
     objects foreach { x => x.draw(gc,g) }
   }
 
   def update(gc: GameContainer, delta: Int): Unit = {
+    player.update(gc,delta)
     objects foreach { x => x.update(gc,delta)}
     world.step(timeStep, velocityIterations, positionIterations);
   }
