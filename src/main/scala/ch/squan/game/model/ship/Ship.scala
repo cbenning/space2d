@@ -45,13 +45,15 @@ class Ship(world:World,x:Float,y:Float,angle:Float,speed:Float,turning:Float,img
   body.createFixture(fixtureDef)
 
   //ch.squan.game.model.ship.Ship movements
-  var up,down,left,right = false
+  var up,down,left,right,strafel,strafer = false
 
   override def controlPressed(cmd:Command):Unit = cmd match {
     case CommandUp => up=true
     case CommandDown => down=true
     case CommandLeft => left=true
     case CommandRight => right=true
+    case CommandStrafeLeft => strafel=true
+    case CommandStrafeRight => strafer=true
     case CommandFire => projectiles = projectiles :+ fireLaser
     case e => println("something weird")
   }
@@ -61,6 +63,8 @@ class Ship(world:World,x:Float,y:Float,angle:Float,speed:Float,turning:Float,img
     case CommandDown => down=false
     case CommandLeft => left=false
     case CommandRight => right=false
+    case CommandStrafeLeft => strafel=false
+    case CommandStrafeRight => strafer=false
     case CommandFire => //
     case e => println("something weird")
   }
@@ -79,6 +83,19 @@ class Ship(world:World,x:Float,y:Float,angle:Float,speed:Float,turning:Float,img
     //Forward/Reverse thrust
     if(up){ body.applyForce(rot.mul(speed),body.getWorldCenter) }
     if(down){ body.applyForce(rot.mul(-speed),body.getWorldCenter) }
+
+    //Strafe Left/Right thrust
+    if(strafel) {
+      val langle = angle-90
+      val tmpLVec = new Vector2f(langle).normalise
+      val lrot = new Vec2(tmpLVec.getX,tmpLVec.getY)
+      body.applyForce(lrot.mul(speed/2),body.getWorldCenter)
+    if(strafer) {
+      val rangle = angle + 90
+      val tmpRVec = new Vector2f(rangle).normalise
+      val rrot = new Vec2(tmpRVec.getX, tmpRVec.getY)
+      body.applyForce(rrot.mul(speed/2), body.getWorldCenter)
+    }
 
     //Left/Right thrust
     if(left){ body.applyTorque(-turning) }
