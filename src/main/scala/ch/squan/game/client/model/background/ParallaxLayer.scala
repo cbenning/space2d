@@ -1,4 +1,4 @@
-package ch.squan.game.model.background
+package ch.squan.game.client.model.background
 
 import org.newdawn.slick.{Image, Graphics, GameContainer}
 

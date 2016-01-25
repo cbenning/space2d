@@ -1,6 +1,8 @@
-package ch.squan.game.model.ship
+package ch.squan.game.client.model.ship
 
-import ch.squan.game.model.command._
+import akka.actor.ActorRef
+import ch.squan.game.GameState
+import ch.squan.game.client.model.command._
 import org.jbox2d.dynamics.World
 import org.newdawn.slick.command.{InputProvider, KeyControl}
 import org.newdawn.slick.{GameContainer, Input}
@@ -8,8 +10,8 @@ import org.newdawn.slick.{GameContainer, Input}
 /**
   * Created by chris on 22/01/16.
   */
-class PlayerShip(gc: GameContainer, world:World,x:Float,y:Float,angle:Float)
-  extends LargeFighter(world,x,y,angle) {
+class PlayerShip(gc: GameContainer, state:GameState,x:Float,y:Float,angle:Float)
+  extends LargeFighter(state,x,y,angle) {
 
   val provider = new InputProvider(gc.getInput());
   provider.addListener(this)

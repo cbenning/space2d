@@ -1,4 +1,4 @@
-package ch.squan.game.model.projectile
+package ch.squan.game.client.model.projectile
 
 import org.newdawn.slick.{GameContainer, Graphics}
 

@@ -1,7 +1,10 @@
-package ch.squan.game.model.ship
+package ch.squan.game.client.model.ship
 
-import ch.squan.game.model.command._
-import ch.squan.game.model.projectile.{Projectile, Laser}
+import java.util.UUID
+
+import ch.squan.game._
+import ch.squan.game.client.model.command._
+import ch.squan.game.client.model.projectile.{Projectile, Laser}
 import org.jbox2d.collision.shapes.PolygonShape
 import org.jbox2d.common.Vec2
 import org.jbox2d.dynamics.{BodyDef, BodyType, FixtureDef, World}
@@ -12,11 +15,13 @@ import org.newdawn.slick.{GameContainer, Graphics, Image}
 /**
   * Created by chris on 22/01/16.
   */
-class Ship(world:World,x:Float,y:Float,angle:Float,speed:Float,turning:Float,imgPath:String)
+class Ship(state:GameState,x:Float,y:Float,angle:Float,speed:Float,turning:Float,imgPath:String,_id:String=UUID.randomUUID.toString)
   extends InputProviderListener {
 
   val img = new Image(imgPath)
   var projectiles = Vector.empty[Projectile]
+
+  def id = _id
 
   //
   //Box2D stuff
@@ -41,33 +46,41 @@ class Ship(world:World,x:Float,y:Float,angle:Float,speed:Float,turning:Float,img
   fixtureDef.friction = 0.0f
 
   //Fire it up
-  val body = world.createBody(bodyDef)
+  val body = state.world.createBody(bodyDef)
   body.createFixture(fixtureDef)
 
-  //ch.squan.game.model.ship.Ship movements
+  //ch.squan.game.client.model.ship.Ship movements
   var up,down,left,right,strafel,strafer = false
 
-  override def controlPressed(cmd:Command):Unit = cmd match {
-    case CommandUp => up=true
-    case CommandDown => down=true
-    case CommandLeft => left=true
-    case CommandRight => right=true
-    case CommandStrafeLeft => strafel=true
-    case CommandStrafeRight => strafer=true
-    case CommandFire => projectiles = projectiles :+ fireLaser
-    case e => println("something weird")
+  /**
+    *
+    * @return
+    */
+  def getPhysicsState:PhysicsState = new PhysicsState(
+      body.getWorldCenter.x,
+      body.getWorldCenter.y,
+      body.getAngle,
+      body.getLinearVelocity,
+      body.getAngularVelocity)
+
+  /**
+    *
+    * @param s
+    */
+  def setPhysicsState(s:PhysicsState):Unit = {
+    body.setTransform(
+      new Vec2(s.x,s.y),
+      s.angle)
+    body.setAngularVelocity(s.angularVelocity)
+    body.setLinearVelocity(s.linearVelocity)
   }
 
-  override def controlReleased(cmd:Command):Unit = cmd match {
-    case CommandUp => up=false
-    case CommandDown => down=false
-    case CommandLeft => left=false
-    case CommandRight => right=false
-    case CommandStrafeLeft => strafel=false
-    case CommandStrafeRight => strafer=false
-    case CommandFire => //
-    case e => println("something weird")
-  }
+  /**
+    *
+    * @return
+    */
+  def getShipDetails:ShipState = new ShipState(speed, turning, imgPath)
+
 
   /**
     *
@@ -117,11 +130,6 @@ class Ship(world:World,x:Float,y:Float,angle:Float,speed:Float,turning:Float,img
     projectiles = projectiles.filter(p => !p.isExpired).map(p => {p.draw(gc,g); p})
   }
 
-  /**
-    *
-    * @return
-    */
-  def fireLaser:Laser = new Laser(world, centerX, centerY, imgAngle)
 
   /**
     *
@@ -135,11 +143,44 @@ class Ship(world:World,x:Float,y:Float,angle:Float,speed:Float,turning:Float,img
     */
   def centerY:Float = body.getWorldCenter.y - (img.getHeight/4)
 
+  /**
+    *
+    * @return
+    */
+  def fireLaser:Laser = new Laser(state.world, centerX, centerY, imgAngle)
 
   /**
     *
     * @return
     */
-  def imgAngle:Float = body.getAngle
+  def imgAngle = body.getAngle
+
+  override def controlPressed(cmd:Command):Unit = {
+    state.subscriber ! cmd  //Send to remote actor
+    cmd match {
+      case CommandUp => up=true
+      case CommandDown => down=true
+      case CommandLeft => left=true
+      case CommandRight => right=true
+      case CommandStrafeLeft => strafel=true
+      case CommandStrafeRight => strafer=true
+      case CommandFire => projectiles = projectiles :+ fireLaser
+      case e => println("something weird")
+    }
+  }
+
+  override def controlReleased(cmd:Command):Unit = {
+    state.subscriber ! cmd //Send to remote actor
+    cmd match {
+      case CommandUp => up = false
+      case CommandDown => down = false
+      case CommandLeft => left = false
+      case CommandRight => right = false
+      case CommandStrafeLeft => strafel = false
+      case CommandStrafeRight => strafer = false
+      case CommandFire => //
+      case e => println("something weird")
+    }
+  }
 
 }
