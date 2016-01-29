@@ -1,8 +1,8 @@
 package ch.squan.game.client.model.ship
 
 import akka.actor.ActorRef
-import ch.squan.game.GameState
 import ch.squan.game.client.model.command._
+import ch.squan.game.shared.model.GameState
 import org.jbox2d.dynamics.World
 import org.newdawn.slick.command.{InputProvider, KeyControl}
 import org.newdawn.slick.{GameContainer, Input}

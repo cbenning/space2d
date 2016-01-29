@@ -6,7 +6,7 @@ import org.newdawn.slick.{GameContainer, Graphics}
 /**
   * Created by chris on 23/01/16.
   */
-object Camera {
+class Camera {
 
   var _player:PlayerShip = null
   var _h = 1
@@ -17,7 +17,7 @@ object Camera {
   def setSize(w:Int,h:Int):Unit = { _w = w; _h = h }
 
   def draw(gc: GameContainer, g: Graphics): Unit = {
-    g.translate(-Camera.x+(gc.getWidth/2),-Camera.y+(gc.getHeight/2))
+    g.translate(-x+(gc.getWidth/2),-y+(gc.getHeight/2))
   }
 
   def x = _player.centerX

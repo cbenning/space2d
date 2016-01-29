@@ -5,6 +5,7 @@ import java.util.UUID
 import ch.squan.game._
 import ch.squan.game.client.model.command._
 import ch.squan.game.client.model.projectile.{Projectile, Laser}
+import ch.squan.game.shared.model.GameState
 import org.jbox2d.collision.shapes.PolygonShape
 import org.jbox2d.common.Vec2
 import org.jbox2d.dynamics.{BodyDef, BodyType, FixtureDef, World}
@@ -156,7 +157,7 @@ class Ship(state:GameState,x:Float,y:Float,angle:Float,speed:Float,turning:Float
   def imgAngle = body.getAngle
 
   override def controlPressed(cmd:Command):Unit = {
-    state.subscriber ! cmd  //Send to remote actor
+    if(state.subscriber!=null){ state.subscriber ! cmd }  //Send to remote actor
     cmd match {
       case CommandUp => up=true
       case CommandDown => down=true
@@ -170,7 +171,7 @@ class Ship(state:GameState,x:Float,y:Float,angle:Float,speed:Float,turning:Float
   }
 
   override def controlReleased(cmd:Command):Unit = {
-    state.subscriber ! cmd //Send to remote actor
+    if(state.subscriber!=null){ state.subscriber ! cmd }  //Send to remote actor
     cmd match {
       case CommandUp => up = false
       case CommandDown => down = false

@@ -1,6 +1,6 @@
 package ch.squan.game.client.model.ship
 
-import ch.squan.game.GameState
+import ch.squan.game.shared.model.GameState
 import org.jbox2d.dynamics.World
 
 /**
