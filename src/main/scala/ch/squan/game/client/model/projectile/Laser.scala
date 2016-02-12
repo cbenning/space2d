@@ -1,5 +1,6 @@
 package ch.squan.game.client.model.projectile
 
+import ch.squan.game.shared.Util
 import org.jbox2d.collision.shapes.PolygonShape
 import org.jbox2d.common.Vec2
 import org.jbox2d.dynamics.{FixtureDef, BodyDef, BodyType, World}
@@ -12,9 +13,10 @@ import scala.concurrent.Future
   * Created by chris on 22/01/16.
   */
 class Laser(world:World,x:Float,y:Float,angle:Float)
-  extends Projectile {
+  extends Projectile
+  with Util {
 
-  val speed = 9000
+  val speed = 0.2f
   val expireMillis = 1200
   val imgScale = 0.5f
   val img = new Image("laser-red.png").getScaledCopy(imgScale)
@@ -44,7 +46,7 @@ class Laser(world:World,x:Float,y:Float,angle:Float)
 
   //Fire it up
   val body = world.createBody(bodyDef)
-  body.createFixture(fixtureDef)
+//  body.createFixture(fixtureDef)
 
   // val angle = body.getAngle
   val tmpVec = new Vector2f(angle)
@@ -53,6 +55,8 @@ class Laser(world:World,x:Float,y:Float,angle:Float)
   img.setRotation(angle+90)
   body.applyForce(rot.mul(speed),body.getWorldCenter)
 
+  println(centerX,centerY)
+
   val f = Future { Thread.sleep(expireMillis); _expired = true }
 
   override def isExpired = _expired
@@ -60,7 +64,19 @@ class Laser(world:World,x:Float,y:Float,angle:Float)
   override def update(gc: GameContainer, delta: Int) = { }
 
   override def draw(gc: GameContainer, g: Graphics):Unit = {
-    img.draw(body.getPosition.x,body.getPosition.y)
+    img.draw(centerX-(img.getWidth/2),centerY-(img.getHeight/4))
   }
+
+  /**
+    *
+    * @return
+    */
+  def centerX:Float = (body.getWorldCenter.x/PHYSICS_SCALE) - (img.getWidth/2)
+
+  /**
+    *
+    * @return
+    */
+  def centerY:Float = (body.getWorldCenter.y/PHYSICS_SCALE) - (img.getHeight/4)
 
 }

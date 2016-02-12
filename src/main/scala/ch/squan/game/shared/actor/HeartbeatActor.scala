@@ -20,7 +20,6 @@ class HeartbeatActor(gameServer:ActorRef,state:GameState)
   override def receive: Receive = {
     case ReceiveTimeout =>
       state.refreshFlag = true
-//      gameServer ! CmdStateUpdate
       context.setReceiveTimeout(30 milliseconds)
   }
 

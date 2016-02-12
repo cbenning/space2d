@@ -31,6 +31,8 @@ class GameClientActor
 //  val stateActor = context.actorOf(GameStateActor.props(state,self),"gamestate")
   val h = context.actorOf(HeartbeatActor.props(self,state),"heartbeat")
   val app = new AppGameContainer(new GameClient(state,self))
+  app.setMaximumLogicUpdateInterval(8)
+  app.setMinimumLogicUpdateInterval(5)
 
   val id = UUID.randomUUID.toString
 

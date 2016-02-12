@@ -1,7 +1,7 @@
 package ch.squan.game.server
 
 import akka.actor.ActorRef
-import ch.squan.game.{ShipStateUpdate, OutgoingStateUpdate, StateUpdate}
+import ch.squan.game._
 import ch.squan.game.client.model.ship.Ship
 import ch.squan.game.shared.model.GameState
 import org.newdawn.slick.{Image, Graphics, BasicGame, GameContainer}
@@ -12,16 +12,18 @@ import org.newdawn.slick.{Image, Graphics, BasicGame, GameContainer}
 class GameServer(state:GameState,subscriber:ActorRef)
   extends BasicGame("server") {
 
-  val timeStep = 1.0f / 60.0f
+//  val timeStep = 1.0f / 60.0f
   val velocityIterations = 6
   val positionIterations = 2
 
   def init(gc: GameContainer): Unit = {
-    val image = new Image("large.png")
+
+    new Image("large.png")
+    new Image("laser-red.png")
+
   }
 
   def render(gc: GameContainer, g: Graphics):Unit = {
-    state.objects.values foreach { x => x.draw(gc,g) }
   }
 
   def update(gc: GameContainer, delta: Int): Unit = {
@@ -32,7 +34,8 @@ class GameServer(state:GameState,subscriber:ActorRef)
 
     //Do computation
     state.objects.values.foreach { o => o.update(gc, delta) }
-    state.world.step(timeStep, velocityIterations, positionIterations)
+//    state.world.step(timeStep, velocityIterations, positionIterations)
+    state.world.step(delta, velocityIterations, positionIterations)
 
     //Send update
     if(state.refreshFlag){ sendState(state); state.refreshFlag = false }
@@ -58,7 +61,18 @@ class GameServer(state:GameState,subscriber:ActorRef)
           s.setPhysicsState(o.physics)
         case e =>
           println("Got state update for non-existent object, creating it...")
-          val ship = new Ship(state, o.physics.x, o.physics.y, o.physics.angle, o.ship.speed, o.ship.turning, o.ship.imgPath, o.id)
+          val ship = new Ship(state,
+              o.physics.x,
+              o.physics.y,
+              o.physics.angle,
+              o.ship.mainEngineThrust,
+              o.ship.rotationalEngineThrust,
+              o.ship.strafeEngineThrust,
+              o.ship.shipForeLength,
+              o.ship.shipAftLength,
+              o.ship.imgPath,
+              o.id)
+
           ship.setPhysicsState(o.physics)
           state.objects += o.id -> ship
       }

@@ -16,12 +16,7 @@ import scala.collection.concurrent.TrieMap
   */
 class GameState {
 
-//  private val _lock: ReadWriteLock = new ReentrantReadWriteLock()
-//  def lock = _lock
-
   val update = new AtomicReference[StateUpdate]()
-//  def update = _update
-//  def update_=(newState:StateUpdate) = _update = Some(newState)
 
   var _camera:Camera = new Camera
   def camera = _camera
@@ -32,7 +27,6 @@ class GameState {
 
   var _objects = TrieMap.empty[String,Ship]
   def objects = _objects
-//  def objects_=(newObjects:TrieMap[String,Ship]) = { _objects = newObjects }
 
   var refreshFlag:Boolean = false
 

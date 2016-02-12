@@ -3,10 +3,11 @@ package ch.squan.game.server.actor
 import java.util.UUID
 
 import akka.actor.{ActorRef, Props, ActorLogging, Actor}
+import ch.squan.game.client.model.command.{CommandHelper, CommandUp}
 import ch.squan.game.server.GameServer
 import ch.squan.game._
 import ch.squan.game.shared.actor.HeartbeatActor
-import ch.squan.game.shared.model.GameState
+import ch.squan.game.shared.model.{OutgoingShipCommand, ShipCommand, GameState}
 import org.newdawn.slick.AppGameContainer
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -24,7 +25,6 @@ class GameServerActor
   with ActorLogging {
 
   val state = new GameState
-//  val stateActor = context.actorOf(GameStateActor.props(state,self),"gamestate")
   val h = context.actorOf(HeartbeatActor.props(self,state),"heartbeat")
   val app = new AppGameContainer(new GameServer(state,self))
 
@@ -44,6 +44,18 @@ class GameServerActor
     case su:StateUpdate => state.update.set(su)
 
     case OutgoingStateUpdate(su:StateUpdate) => clients.values.foreach( _ ! su)
+
+    case sc:ShipCommand => state.objects.get(sc.id) match {
+      case Some(s) =>
+        clients.values.foreach( _ ! sc )
+        log.warning("received remote input")
+        log.warning("received remote input")
+        if(sc.pressed) s.controlPressed(CommandHelper.nameToCommand(sc.cmd))
+        else s.controlReleased(CommandHelper.nameToCommand(sc.cmd))
+      case None => //
+    }
+
+    case OutgoingShipCommand(sc:ShipCommand) => clients.values.foreach( _ ! sc)
 
     case e => log.warning("Got an unexpected message: {}")
   }
