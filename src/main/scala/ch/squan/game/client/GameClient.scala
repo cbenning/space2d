@@ -15,7 +15,6 @@ import scala.concurrent.duration._
 class GameClient(state:GameState, subscriber: ActorRef)
   extends BasicGame("client") {
 
-//  val timeStep = 1.0f / 60.0f
   val velocityIterations = 3//6
   val positionIterations = 2//2
 
@@ -23,10 +22,11 @@ class GameClient(state:GameState, subscriber: ActorRef)
   val MAX_CYCLES_PER_FRAME:Float = 5
   var timeAccumulator:Float = 0
 
+  val PHYSICS_SPEED_MODIFIER = 1.0f
+
   implicit val timeout = Timeout(5 seconds)
 
   def init(gc: GameContainer): Unit = {
-//    gc.setTargetFrameRate(60)
     gc.setVSync(true)
     gc.setAlwaysRender(true) //Do not stop while not in focus
     state.level = new Level(GameProperties.levelWidth, GameProperties.levelHeight)
@@ -50,21 +50,19 @@ class GameClient(state:GameState, subscriber: ActorRef)
     //Do computation
     state.player.update(gc, delta)
     state.objects.values foreach { x => x.update(gc, delta) }
-//    state.world.step(timeStep, velocityIterations, positionIterations)
-//
-//    timeAccumulator += delta
-//    if (timeAccumulator > (MAX_CYCLES_PER_FRAME * UPDATE_INTERVAL)) {
-//        timeAccumulator = UPDATE_INTERVAL
-//    }
 
-//    while (timeAccumulator >= UPDATE_INTERVAL) {
-//        timeAccumulator -= UPDATE_INTERVAL
-//        state.world.step(UPDATE_INTERVAL*10, velocityIterations, positionIterations);
-//    }
+    timeAccumulator += delta
+    if (timeAccumulator > (MAX_CYCLES_PER_FRAME * UPDATE_INTERVAL)) {
+        timeAccumulator = UPDATE_INTERVAL
+    }
 
+    while (timeAccumulator >= UPDATE_INTERVAL) {
+        timeAccumulator -= UPDATE_INTERVAL
+        state.world.step(UPDATE_INTERVAL*PHYSICS_SPEED_MODIFIER, velocityIterations, positionIterations);
+    }
 
-    val d = delta.toFloat/1000 * 100
-    state.world.step(d,velocityIterations, positionIterations)
+//    val d = delta.toFloat/1000 * 100
+//    state.world.step(d,velocityIterations, positionIterations)
 
     //Send update
     if(state.refreshFlag){ sendState(state); state.refreshFlag = false }

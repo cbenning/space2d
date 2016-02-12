@@ -5,7 +5,7 @@ package ch.squan.game.shared
   */
 trait Util {
 
-  def PHYSICS_SCALE = 0.01f
+  def PHYSICS_SCALE = 0.1f
 
   def toPhysX(x:Float):Float = { x * PHYSICS_SCALE }
   def toPhysY(y:Float):Float = { -y * PHYSICS_SCALE }

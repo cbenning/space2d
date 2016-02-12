@@ -16,7 +16,7 @@ class Laser(world:World,x:Float,y:Float,angle:Float)
   extends Projectile
   with Util {
 
-  val speed = 0.2f
+  val speed = 0.06f
   val expireMillis = 1200
   val imgScale = 0.5f
   val img = new Image("laser-red.png").getScaledCopy(imgScale)
@@ -36,7 +36,7 @@ class Laser(world:World,x:Float,y:Float,angle:Float)
 
   //polygon
   val dynamicBox = new PolygonShape
-  dynamicBox.setAsBox(1, 1)
+  dynamicBox.setAsBox(0.001f, 0.001f)
 
   //fixture def
   val fixtureDef = new FixtureDef
@@ -46,22 +46,22 @@ class Laser(world:World,x:Float,y:Float,angle:Float)
 
   //Fire it up
   val body = world.createBody(bodyDef)
-//  body.createFixture(fixtureDef)
+  body.createFixture(fixtureDef)
 
   // val angle = body.getAngle
   val tmpVec = new Vector2f(angle)
   val rot = new Vec2(tmpVec.getX,tmpVec.getY)
 
   img.setRotation(angle+90)
-  body.applyForce(rot.mul(speed),body.getWorldCenter)
-
-  println(centerX,centerY)
+//  body.applyForce(rot.mul(speed),body.getWorldCenter)
+  body.applyLinearImpulse(rot.mul(speed*1000),body.getWorldCenter)
 
   val f = Future { Thread.sleep(expireMillis); _expired = true }
 
   override def isExpired = _expired
 
-  override def update(gc: GameContainer, delta: Int) = { }
+  override def update(gc: GameContainer, delta: Int) = {
+  }
 
   override def draw(gc: GameContainer, g: Graphics):Unit = {
     img.draw(centerX-(img.getWidth/2),centerY-(img.getHeight/4))

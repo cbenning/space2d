@@ -43,14 +43,14 @@ class Ship(state:GameState,
   bodyDef.`type` = BodyType.DYNAMIC
   bodyDef.position.set(x, y)
   bodyDef.angle = angle
-  bodyDef.linearDamping = 0.001f
-  bodyDef.angularDamping = 0.4f
+  bodyDef.linearDamping = 0.2f
+  bodyDef.angularDamping = 10.0f
   bodyDef.gravityScale = 0.0f // Set the gravity scale to zero so this body will float
   bodyDef.allowSleep = false
 
   //shape Def
   val dynamicBox = new PolygonShape
-  dynamicBox.setAsBox(0.6f, 0.6f)
+  dynamicBox.setAsBox(0.01f, 0.01f)
 
   //fixture def
   val fixtureDef = new FixtureDef
@@ -138,8 +138,7 @@ class Ship(state:GameState,
       body.applyForce(rrot.mul(strafeEngineThrust), body.getWorldCenter)
     }
 
-    //Left thrust
-    if(left) {
+    if(left && !right) { //Left thrust
       val tmpFront = new Vector2f(angle).normalise
       val front = new Vec2(tmpFront.getX, tmpFront.getY)
 
@@ -152,9 +151,7 @@ class Ship(state:GameState,
       val right = left.negate
       body.applyForce(right, body.getWorldCenter.add(front.mul(shipAftLength)))
     }
-
-    //Right thrust
-    if(right) {
+    else if(right && !left) { //Right thrust
       val tmpFront = new Vector2f(angle).normalise
       val front = new Vec2(tmpFront.getX, tmpFront.getY)
 
@@ -167,6 +164,11 @@ class Ship(state:GameState,
       val right = left.negate
       body.applyForce(right, body.getWorldCenter.add(front.mul(-shipForeLength)))
     }
+    else {
+//      body.setAngularVelocity(body.getAngularVelocity/2)
+    }
+
+
 
     //      val tmpFront2 = new Vector2f(tmpFront.x+1,tmpFront.y+1)
 

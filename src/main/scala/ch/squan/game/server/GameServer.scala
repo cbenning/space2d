@@ -13,8 +13,14 @@ class GameServer(state:GameState,subscriber:ActorRef)
   extends BasicGame("server") {
 
 //  val timeStep = 1.0f / 60.0f
-  val velocityIterations = 6
+  val velocityIterations = 3
   val positionIterations = 2
+
+  val UPDATE_INTERVAL:Float = 1.0f/60.0f
+  val MAX_CYCLES_PER_FRAME:Float = 5
+  var timeAccumulator:Float = 0
+
+  val PHYSICS_SPEED_MODIFIER = 40.0f
 
   def init(gc: GameContainer): Unit = {
 
@@ -35,7 +41,17 @@ class GameServer(state:GameState,subscriber:ActorRef)
     //Do computation
     state.objects.values.foreach { o => o.update(gc, delta) }
 //    state.world.step(timeStep, velocityIterations, positionIterations)
-    state.world.step(delta, velocityIterations, positionIterations)
+//    state.world.step(delta, velocityIterations, positionIterations)
+
+    timeAccumulator += delta
+    if (timeAccumulator > (MAX_CYCLES_PER_FRAME * UPDATE_INTERVAL)) {
+        timeAccumulator = UPDATE_INTERVAL
+    }
+
+    while (timeAccumulator >= UPDATE_INTERVAL) {
+        timeAccumulator -= UPDATE_INTERVAL
+        state.world.step(UPDATE_INTERVAL*PHYSICS_SPEED_MODIFIER, velocityIterations, positionIterations);
+    }
 
     //Send update
     if(state.refreshFlag){ sendState(state); state.refreshFlag = false }
