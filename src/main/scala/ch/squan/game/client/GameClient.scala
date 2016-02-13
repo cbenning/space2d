@@ -15,7 +15,7 @@ import scala.concurrent.duration._
 class GameClient(state:GameState, subscriber: ActorRef)
   extends BasicGame("client") {
 
-  val velocityIterations = 3//6
+  val velocityIterations = 6//6
   val positionIterations = 2//2
 
   val UPDATE_INTERVAL:Float = 1.0f/60.0f
@@ -27,12 +27,16 @@ class GameClient(state:GameState, subscriber: ActorRef)
   implicit val timeout = Timeout(5 seconds)
 
   def init(gc: GameContainer): Unit = {
-    gc.setVSync(true)
+//    gc.setVSync(true)
+    gc.setTargetFrameRate(60)
     gc.setAlwaysRender(true) //Do not stop while not in focus
     state.level = new Level(GameProperties.levelWidth, GameProperties.levelHeight)
     state.player = new PlayerShip(gc, state, 0, 0, 0)
+    state.player.subscriber = subscriber// subscribe gameactor to events
     state.camera.follow(state.player)
     state.camera.setSize(gc.getWidth, gc.getHeight)
+    new Image("large.png")
+    new Image("laser-red.png")
   }
 
   def render(gc: GameContainer, g: Graphics) {
@@ -84,7 +88,8 @@ class GameClient(state:GameState, subscriber: ActorRef)
   def syncState(state: GameState, stateUpdate: StateUpdate) = {
     if (state.player != null) {
       //only continue if player exists
-      stateUpdate.objects.filter(_.id != state.player.id).foreach(o => {
+//      stateUpdate.objects.filter(_.id != state.player.id).foreach(o => {
+      stateUpdate.objects.foreach(o => {
         //filter player from results
         state.objects.get(o.id) match {
           case Some(s) =>

@@ -5,10 +5,11 @@ import java.util.UUID
 import akka.actor._
 import akka.util.Timeout
 import ch.squan.game.client.GameClient
+import ch.squan.game.client.model.command.CommandHelper
 import ch.squan.game.client.model.ship.{PlayerShip, Ship}
 import ch.squan.game._
 import ch.squan.game.shared.actor.HeartbeatActor
-import ch.squan.game.shared.model.GameState
+import ch.squan.game.shared.model.{OutgoingShipCommand, ShipCommand, GameState}
 import org.newdawn.slick.AppGameContainer
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -55,9 +56,28 @@ class GameClientActor
       servers += id -> sender
       log.warning("New server connected: {}",id)
 
-    case su:StateUpdate => state.update.set(su)
+    case su:StateUpdate =>
+      state.update.set(new StateUpdate(
+        state.player match {
+          case null => su.objects
+          case e:Ship => su.objects.filter(_.id != state.player.id)
+        }
+      ))
 
     case OutgoingStateUpdate(su:StateUpdate) => servers.values.foreach( _ ! su)
+
+    case OutgoingShipCommand(sc:ShipCommand) => servers.values.foreach( _ ! sc)
+
+    case sc:ShipCommand =>
+      if(sc.id != state.player.id) { //Ignore local player
+        state.objects.get(sc.id) match {
+          case Some(s) =>
+            log.warning("received remote input")
+            if(sc.pressed) s.controlPressed(CommandHelper.nameToCommand(sc.cmd))
+            else s.controlReleased(CommandHelper.nameToCommand(sc.cmd))
+          case None => //
+        }
+      }
 
     case e => log.warning("Got an unexpected message: {}")
 

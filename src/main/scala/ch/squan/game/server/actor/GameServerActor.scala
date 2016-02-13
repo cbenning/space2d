@@ -27,8 +27,10 @@ class GameServerActor
   val state = new GameState
   val h = context.actorOf(HeartbeatActor.props(self,state),"heartbeat")
   val app = new AppGameContainer(new GameServer(state,self))
+  app.setMaximumLogicUpdateInterval(8)
+  app.setMinimumLogicUpdateInterval(5)
 
-  app.setDisplayMode(100, 100, false)
+  app.setDisplayMode(1024, 768, false)
   val a = Future { app.start() }
 
   val id = UUID.randomUUID.toString
@@ -49,13 +51,10 @@ class GameServerActor
       case Some(s) =>
         clients.values.foreach( _ ! sc )
         log.warning("received remote input")
-        log.warning("received remote input")
         if(sc.pressed) s.controlPressed(CommandHelper.nameToCommand(sc.cmd))
         else s.controlReleased(CommandHelper.nameToCommand(sc.cmd))
       case None => //
     }
-
-    case OutgoingShipCommand(sc:ShipCommand) => clients.values.foreach( _ ! sc)
 
     case e => log.warning("Got an unexpected message: {}")
   }

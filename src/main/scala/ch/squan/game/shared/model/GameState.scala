@@ -21,10 +21,6 @@ class GameState {
   var _camera:Camera = new Camera
   def camera = _camera
 
-  var _subscriber:ActorRef = null
-  def subscriber = _subscriber
-  def subscriber_=(newSubscriber:ActorRef) = _subscriber=newSubscriber
-
   var _objects = TrieMap.empty[String,Ship]
   def objects = _objects
 

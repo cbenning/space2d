@@ -12,24 +12,29 @@ import org.newdawn.slick.{Image, Graphics, BasicGame, GameContainer}
 class GameServer(state:GameState,subscriber:ActorRef)
   extends BasicGame("server") {
 
-//  val timeStep = 1.0f / 60.0f
-  val velocityIterations = 3
+  val velocityIterations = 6
   val positionIterations = 2
 
   val UPDATE_INTERVAL:Float = 1.0f/60.0f
   val MAX_CYCLES_PER_FRAME:Float = 5
   var timeAccumulator:Float = 0
 
-  val PHYSICS_SPEED_MODIFIER = 40.0f
+  val PHYSICS_SPEED_MODIFIER = 1.0f
 
   def init(gc: GameContainer): Unit = {
-
+//    gc.setVSync(true)
+    gc.setTargetFrameRate(60)
+    gc.setAlwaysRender(true) //Do not stop while not in focus
+    state.level = new Level(GameProperties.levelWidth, GameProperties.levelHeight)
+    state.camera.setSize(gc.getWidth, gc.getHeight)
     new Image("large.png")
     new Image("laser-red.png")
-
   }
 
   def render(gc: GameContainer, g: Graphics):Unit = {
+    state.camera.draw(gc, g) //Must come first
+    state.level.draw(gc, g)
+    state.objects.values foreach { x => x.draw(gc, g) }
   }
 
   def update(gc: GameContainer, delta: Int): Unit = {
@@ -40,8 +45,6 @@ class GameServer(state:GameState,subscriber:ActorRef)
 
     //Do computation
     state.objects.values.foreach { o => o.update(gc, delta) }
-//    state.world.step(timeStep, velocityIterations, positionIterations)
-//    state.world.step(delta, velocityIterations, positionIterations)
 
     timeAccumulator += delta
     if (timeAccumulator > (MAX_CYCLES_PER_FRAME * UPDATE_INTERVAL)) {
@@ -52,6 +55,9 @@ class GameServer(state:GameState,subscriber:ActorRef)
         timeAccumulator -= UPDATE_INTERVAL
         state.world.step(UPDATE_INTERVAL*PHYSICS_SPEED_MODIFIER, velocityIterations, positionIterations);
     }
+
+//    val d = delta.toFloat/1000 * 100
+//    state.world.step(d,velocityIterations, positionIterations)
 
     //Send update
     if(state.refreshFlag){ sendState(state); state.refreshFlag = false }

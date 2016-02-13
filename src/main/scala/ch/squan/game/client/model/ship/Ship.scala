@@ -2,6 +2,7 @@ package ch.squan.game.client.model.ship
 
 import java.util.UUID
 
+import akka.actor.ActorRef
 import ch.squan.game._
 import ch.squan.game.client.model.command._
 import ch.squan.game.client.model.projectile.{Projectile, Laser}
@@ -63,9 +64,12 @@ class Ship(state:GameState,
   body.setFixedRotation(false)
   body.createFixture(fixtureDef)
 
-
   //ch.squan.game.client.model.ship.Ship movements
   var up, down, left, right, strafel, strafer = false
+
+  var _subscriber:ActorRef = null
+  def subscriber = _subscriber
+  def subscriber_=(newSubscriber:ActorRef) = _subscriber=newSubscriber
 
   /**
     *
@@ -138,7 +142,7 @@ class Ship(state:GameState,
       body.applyForce(rrot.mul(strafeEngineThrust), body.getWorldCenter)
     }
 
-    if(left && !right) { //Left thrust
+    if(left) { //Left thrust
       val tmpFront = new Vector2f(angle).normalise
       val front = new Vec2(tmpFront.getX, tmpFront.getY)
 
@@ -151,7 +155,8 @@ class Ship(state:GameState,
       val right = left.negate
       body.applyForce(right, body.getWorldCenter.add(front.mul(shipAftLength)))
     }
-    else if(right && !left) { //Right thrust
+
+    if(right) { //Right thrust
       val tmpFront = new Vector2f(angle).normalise
       val front = new Vec2(tmpFront.getX, tmpFront.getY)
 
@@ -164,11 +169,6 @@ class Ship(state:GameState,
       val right = left.negate
       body.applyForce(right, body.getWorldCenter.add(front.mul(-shipForeLength)))
     }
-    else {
-//      body.setAngularVelocity(body.getAngularVelocity/2)
-    }
-
-
 
     //      val tmpFront2 = new Vector2f(tmpFront.x+1,tmpFront.y+1)
 
@@ -253,7 +253,7 @@ class Ship(state:GameState,
   override def controlPressed(cmd:Command):Unit = {
     cmd match {
       case bc:BasicCommand =>
-        if(state.subscriber!=null){ state.subscriber ! new OutgoingShipCommand(new ShipCommand(id,true,bc.getName)) }  //Send to remote actor
+        if(subscriber!=null){ subscriber ! new OutgoingShipCommand(new ShipCommand(id,true,bc.getName)) }  //Send to remote actor
         bc match {
           case CommandUp => up=true
           case CommandDown => down=true
@@ -271,7 +271,7 @@ class Ship(state:GameState,
   override def controlReleased(cmd:Command):Unit = {
     cmd match {
       case bc:BasicCommand =>
-        if(state.subscriber!=null){ state.subscriber ! new OutgoingShipCommand(new ShipCommand(id,false,bc.getName)) }  //Send to remote actor
+        if(subscriber!=null){ subscriber ! new OutgoingShipCommand(new ShipCommand(id,false,bc.getName)) }  //Send to remote actor
         bc match {
           case CommandUp => up = false
           case CommandDown => down = false

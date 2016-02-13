@@ -20,9 +20,9 @@ class Camera {
     g.translate(-x+(gc.getWidth/2),-y+(gc.getHeight/2))
   }
 
-  def x = _player.centerX
+  def x = if(_player!=null){_player.centerX} else { 0.0f }
 
-  def y = _player.centerY
+  def y = if(_player!=null){_player.centerY} else { 0.0f }
 
   def w = _w
 
