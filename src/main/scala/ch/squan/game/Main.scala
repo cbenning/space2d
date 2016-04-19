@@ -23,8 +23,4 @@ object Main extends App {
     val system = ActorSystem.create("gameclient2", config.getConfig("client2").withFallback(config))
     val g = system.actorOf(GameClientActor.props,"gameclient2")
   }
-
-
-
-
 }
